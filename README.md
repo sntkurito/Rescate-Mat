@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rescate Matemático - Sitio Oficial del Videojuego</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>">
+    <meta name="description" content="Rescate Matemático - Juego educativo donde las matemáticas son tu arma para rescatar a la princesa. ¡Aprende matemáticas jugando!">
+    <meta name="keywords" content="juego educativo, matemáticas, videojuego, aprender jugando, educación, phaser">
+    <meta name="author" content="Equipo Rescate Matemático">
+    <style>
+        /* RESET Y CONFIGURACIÓN GLOBAL */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0c2461 0%, #1e3799 100%);
+            color: white;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* HEADER Y NAVEGACIÓN */
+        header {
+            background: rgba(12, 36, 97, 0.95);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            padding: 1rem 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            border-bottom: 3px solid #f6b93b;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #f6b93b, #e55039);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #0c2461;
+            box-shadow: 0 4px 10px rgba(246, 185, 59, 0.4);
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(to right, #f6b93b, #e55039);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            background: #4a69bd;
+            transform: translateY(-2px);
+        }
+
+        /* HERO SECTION */
+        .hero {
+            padding: 180px 2rem 100px;
+            text-align: center;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="%23f6b93b" opacity="0.3"/></svg>') repeat;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #f6b93b, #78e08f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            max-width: 800px;
+            margin: 0 auto 40px;
+            color: #d1d8e0;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(to right, #e55039, #f6b93b);
+            color: white;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 50px;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(229, 80, 57, 0.4);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(229, 80, 57, 0.6);
+        }
+
+        /* SECTIONS */
+        section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 50px;
+            color: #f6b93b;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: #4a69bd;
+            border-radius: 2px;
+        }
+
+        /* GAMEPLAY SECTION */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: #f6b93b;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .feature-title {
+            color: #78e08f;
+            margin-bottom: 15px;
+            font-size: 22px;
+            text-align: center;
+        }
+
+        /* CHARACTERS SECTION */
+        .characters-section {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .characters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .character-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .character-card:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .character-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(45deg, #f6b93b, #e55039);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: bold;
+            color: #0c2461;
+        }
+
+        /* DEMO SECTION */
+        .demo-section {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 80px 2rem;
+        }
+
+        .demo-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            border: 3px solid #4a69bd;
+        }
+
+        .play-button {
+            display: inline-block;
+            background: #78e08f;
+            color: #0c2461;
+            padding: 15px 40px;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 50px;
+            margin: 30px 0;
+            transition: all 0.3s ease;
+        }
+
+        .play-button:hover {
+            background: #58d68d;
+            transform: scale(1.1);
+            box-shadow: 0 10px 20px rgba(120, 224, 143, 0.4);
+        }
+
+        .controls-info {
+            background: rgba(74, 105, 189, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+            display: inline-block;
+        }
+
+        /* CREDITS SECTION */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .team-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .team-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .team-role {
+            color: #f6b93b;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .dev-process {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 50px;
+        }
+
+        /* FOOTER */
+        footer {
+            background: rgba(12, 36, 97, 0.95);
+            padding: 50px 0;
+            text-align: center;
+            border-top: 3px solid #f6b93b;
+        }
+
+        .footer-logo {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #f6b93b;
+            font-weight: bold;
+        }
+
+        .copyright {
+            color: #d1d8e0;
+            margin-top: 30px;
+            font-size: 14px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+            
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .hero-subtitle {
+                font-size: 18px;
+            }
+            
+            section {
+                padding: 60px 0;
+            }
+            
+            .section-title {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER Y NAVEGACIÓN -->
+    <header>
+        <div class="container nav-container">
+            <a href="#inicio" class="logo">
+                <div class="logo-icon">RM</div>
+                <div class="logo-text">RESCATE MATEMÁTICO</div>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="#gameplay">Gameplay</a></li>
+                    <li><a href="#personajes">Personajes</a></li>
+                    <li><a href="#demo">Demo</a></li>
+                    <li><a href="#creditos">Créditos</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section id="inicio" class="hero">
+        <div class="container">
+            <h1>¡RESCATA A LA PRINCESA MATEMÁTICA!</h1>
+            <p class="hero-subtitle">
+                En un reino donde los números gobiernan la realidad, la malvada Reina de la Ignorancia 
+                ha secuestrado a la Princesa de los Números. Solo tú, con tu ingenio matemático, 
+                puedes rescatarla y restaurar el equilibrio. ¡Las matemáticas son tu arma!
+            </p>
+            <a href="https://sntkurito.github.io/Juego/" class="cta-button" target="_blank">JUGAR DEMO GRATIS</a>
+        </div>
+    </section>
+
+    <!-- GAMEPLAY SECTION -->
+    <section id="gameplay">
+        <div class="container">
+            <h2 class="section-title">¿CÓMO SE JUEGA?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎮</div>
+                    <h3 class="feature-title">CONTROLES INTUITIVOS</h3>
+                    <p>Usa las flechas o WASD para moverte, salta con ESPACIO o ↑, agáchate con ↓ o S, y corre rápido con SHIFT.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚔️</div>
+                    <h3 class="feature-title">COMBATES MATEMÁTICOS</h3>
+                    <p>Los enemigos te desafían con problemas de suma, resta y multiplicación. ¡Resuelve en 60 segundos para ganar!</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌟</div>
+                    <h3 class="feature-title">8 MUNDOS ÚNICOS</h3>
+                    <p>Desde el Bosque de las Sumas hasta el Castillo Final, cada mundo aumenta la dificultad matemática.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏆</div>
+                    <h3 class="feature-title">SISTEMA DE PUNTUACIÓN</h3>
+                    <p>Monedas: +100 pts | Enemigos: +200 pts | Mundos: +1000 pts | ¡Persigue el récord máximo!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CHARACTERS SECTION -->
+    <section id="personajes" class="characters-section">
+        <div class="container">
+            <h2 class="section-title">PERSONAJES PRINCIPALES</h2>
+            <div class="characters-grid">
+                <div class="character-card">
+                    <div class="character-icon">👑</div>
+                    <h3>EL HÉROE MATEMÁTICO</h3>
+                    <p>Valiente guardián que usa las matemáticas como arma. Su misión: rescatar a la princesa y salvar el reino.</p>
+                </div>
+                <div class="character-card">
+                    <div class="character-icon">👸</div>
+                    <h3>PRINCESA DE LOS NÚMEROS</h3>
+                    <p>Guardián de las ecuaciones sagradas. Sin ella, el reino caerá en el caos matemático.</p>
+                </div>
+                <div class="character-card">
+                    <div class="character-icon">👿</div>
+                    <h3>REINA DE LA IGNORANCIA</h3>
+                    <p>Villana que odia el conocimiento. Busca eliminar las matemáticas para gobernar con confusión.</p>
+                </div>
+                <div class="character-card">
+                    <div class="character-icon">🐉</div>
+                    <h3>EJÉRCITO MATEMÁTICO</h3>
+                    <p>Bichos Calculadores, Tortugas de Ecuaciones y Plantas de Multiplicación protegen cada mundo.</p>
+                </div>
+            </div>
+            
+            <div class="dev-process">
+                <h3 style="color: #78e08f; margin-bottom: 20px;">LA HISTORIA DEL UNIVERSO MATEMÁTICO</h3>
+                <p>
+                    En un reino donde 2+2 puede abrir portales y las ecuaciones mantienen la realidad, 
+                    las matemáticas son más que números: son magia, poder y vida. La Princesa mantenía 
+                    este balance, pero su secuestro ha desatado el caos. Ahora, monstruos matemáticos 
+                    campan por el reino, y solo un verdadero héroe puede restaurar el orden resolviendo 
+                    los problemas que mantienen la realidad en pie.
+                </p>
+                <p style="margin-top: 15px; font-style: italic; color: #f6b93b;">
+                    "Aquí, cada problema resuelto es un paso más hacia la salvación del reino."
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- DEMO SECTION -->
+    <section id="demo" class="demo-section">
+        <div class="container">
+            <h2 class="section-title">¡JUEGA LA DEMO!</h2>
+            <div class="demo-container">
+                <h3 style="color: #f6b93b; margin-bottom: 20px;">EXPERIMENTA LA AVENTURA MATEMÁTICA</h3>
+                <p style="font-size: 18px; margin-bottom: 25px;">
+                    Prueba el juego completo gratis. Derrota a 8 enemigos, 
+                    recolecta monedas y rescata a la princesa en el primer mundo.
+                </p>
+                
+                <div class="controls-info">
+                    <h4 style="color: #f6b93b; margin-bottom: 10px;">🎮 CONTROLES DEL JUEGO:</h4>
+                    <p>• ← → o A D: Moverse izquierda/derecha</p>
+                    <p>• ↑ o ESPACIO: Saltar</p>
+                    <p>• ↓ o S: Agacharse</p>
+                    <p>• SHIFT: Correr rápido</p>
+                    <p>• Los enemigos inician combates automáticamente al tocarlos</p>
+                    <p>• ¡Tienes 60 segundos para resolver cada problema!</p>
+                </div>
+                
+                <a href="https://sntkurito.github.io/Juego/" class="play-button" target="_blank">▶ JUGAR DEMO AHORA</a>
+                
+                <p style="color: #78e08f; margin-top: 20px; font-size: 16px;">
+                    ⚠️ Se abrirá en una nueva pestaña
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CREDITS SECTION -->
+    <section id="creditos">
+        <div class="container">
+            <h2 class="section-title">EQUIPO DE DESARROLLO</h2>
+            
+            <div class="team-grid">
+                <div class="team-card">
+                    <h4>DESARROLLADOR PRINCIPAL</h4>
+                    <p>Programación del juego completo</p>
+                    <div class="team-role">Programador</div>
+                </div>
+                <div class="team-card">
+                    <h4>DISEÑADOR DE NIVELES</h4>
+                    <p>Diseño de mundos y desafíos</p>
+                    <div class="team-role">Game Designer</div>
+                </div>
+                <div class="team-card">
+                    <h4>ARTISTA CONCEPTUAL</h4>
+                    <p>Diseño visual y personajes</p>
+                    <div class="team-role">Artista Digital</div>
+                </div>
+                <div class="team-card">
+                    <h4>ASESOR EDUCATIVO</h4>
+                    <p>Diseño de problemas matemáticos</p>
+                    <div class="team-role">Consultor Pedagógico</div>
+                </div>
+            </div>
+            
+            <div class="dev-process">
+                <h3 style="color: #78e08f; margin-bottom: 20px;">PROCESO DE DESARROLLO</h3>
+                <p><strong>Duración:</strong> 3 semanas de desarrollo intensivo</p>
+                <p><strong>Tecnologías utilizadas:</strong> HTML5, CSS3, JavaScript, Phaser.js</p>
+                <p><strong>Metodología:</strong> Desarrollo iterativo con pruebas constantes</p>
+                <p><strong>Objetivo educativo:</strong> Hacer las matemáticas divertidas y accesibles</p>
+                
+                <div style="margin-top: 20px; padding: 15px; background: rgba(120, 224, 143, 0.1); border-radius: 10px;">
+                    <h4 style="color: #f6b93b; margin-bottom: 10px;">📈 FASES DEL PROYECTO:</h4>
+                    <p>• Semana 1: Prototipo básico con física y controles</p>
+                    <p>• Semana 2: Sistema de combate matemático y enemigos</p>
+                    <p>• Semana 3: Pulido, sonidos y sitio web vitrina</p>
+                </div>
+                
+                <p style="margin-top: 20px; font-style: italic; color: #d1d8e0;">
+                    "Cada error de código fue una lección, cada problema resuelto una victoria. 
+                    Este proyecto demostró que aprender puede ser la aventura más épica de todas."
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <div class="footer-logo">🧮 RESCATE MATEMÁTICO</div>
+            <p style="max-width: 600px; margin: 0 auto 20px; font-size: 16px;">
+                Videojuego educativo desarrollado para transformar el aprendizaje de matemáticas 
+                en una aventura emocionante y memorable.
+            </p>
+            
+            <div style="margin: 30px 0;">
+                <a href="#gameplay" style="color: #f6b93b; margin: 0 15px; text-decoration: none;">Gameplay</a> •
+                <a href="#personajes" style="color: #f6b93b; margin: 0 15px; text-decoration: none;">Personajes</a> •
+                <a href="#demo" style="color: #f6b93b; margin: 0 15px; text-decoration: none;">Demo</a> •
+                <a href="#creditos" style="color: #f6b93b; margin: 0 15px; text-decoration: none;">Créditos</a>
+            </div>
+            
+            <div class="copyright">
+                © 2024 RESCATE MATEMÁTICO - Proyecto Educativo<br>
+                Desarrollado con ❤️ para hacer las matemáticas divertidas<br>
+                Contacto: equipo@rescatematematico.com<br>
+                Todos los derechos reservados
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // NAVEGACIÓN SUAVE
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if(targetId === '#') return;
+                
+                const target = document.querySelector(targetId);
+                if(target) {
+                    window.scrollTo({
+                        top: target.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // EFECTO EN HEADER AL SCROLL
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if(window.scrollY > 100) {
+                header.style.background = 'rgba(12, 36, 97, 0.98)';
+                header.style.boxShadow = '0 5px 20px rgba(0,0,0,0.5)';
+            } else {
+                header.style.background = 'rgba(12, 36, 97, 0.95)';
+                header.style.boxShadow = '0 4px 20px rgba(0,0,0,0.4)';
+            }
+        });
+
+        // ANIMACIÓN PARA LAS TARJETAS
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // OBSERVAR ELEMENTOS PARA ANIMAR
+        document.querySelectorAll('.feature-card, .character-card, .team-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            observer.observe(card);
+        });
+
+        // MENSAJE AL ABRIR EL JUEGO
+        document.querySelectorAll('a[href="https://sntkurito.github.io/Juego/"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                // El juego se abrirá en nueva pestaña automáticamente por target="_blank"
+                console.log('Redirigiendo al juego en GitHub Pages...');
+            });
+        });
+    </script>
+</body>
+</html>
